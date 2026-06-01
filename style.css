@@ -64,21 +64,23 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  width: 85%;
+  max-width: 400px;
+  margin-bottom: 32px;
 }
 .presenter-logo {
-  height: 36px;
+  height: 64px;
   width: auto;
   object-fit: contain;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 .presenter-text {
   font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-  font-weight: 700;
+  font-weight: 900;
   color: #c0c0c0;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 3px;
+  font-size: 1.3rem;
+  letter-spacing: 6px;
 }
 
 #intro-trophy {

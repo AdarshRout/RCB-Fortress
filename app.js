@@ -290,7 +290,7 @@ function showResultModal() {
   /* Dynamic headline & tagline */
   let headline, tagline;
   if      (discount === 0)  { headline = 'KEEP TRYING!';  tagline = "You'll smash it next time, Paltan!"; }
-  else if (discount <  10)  { headline = 'NICE START!';   tagline = 'The fortress put up a fight!'; }
+  else if (discount <  10)  { headline = 'NICE START!';   tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
   else if (discount <  25)  { headline = 'WELL PLAYED!';  tagline = 'You dented the fortress!'; }
   else if (discount <  40)  { headline = 'PLAY BOLD!';    tagline = 'Ee Sala Cup Namde style!'; }
   else                      { headline = 'EE SALA! 🏆';  tagline = 'You destroyed the fortress!'; }

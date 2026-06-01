@@ -16,6 +16,13 @@ const TOTAL      = COLS * ROWS;       // 128
 const GAME_TIME  = 19;                // seconds
 const DBL_MS     = 300;               // double-tap window (ms)
 
+/* ═══ HELPERS ═════════════════════════════════════════════════════════ */
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
 /* ═══ ELEMENT REFS ════════════════════════════════════════════════════ */
 const gridWall     = document.getElementById('grid-wall');
 const logoOverlay  = document.getElementById('logo-overlay');
@@ -64,7 +71,7 @@ function initGame() {
 
   /* ── Reset HUD ── */
   hudBroken.textContent = '0';
-  hudTimer.textContent  = GAME_TIME;
+  hudTimer.textContent  = formatTime(GAME_TIME);
   hudTimer.classList.remove('danger');
   progressBar.style.width = '0%';
   hintText.classList.remove('hide');
@@ -233,7 +240,7 @@ function spawnParticles(brick) {
 function startCountdown() {
   timerInterval = setInterval(() => {
     timerLeft--;
-    hudTimer.textContent = timerLeft;
+    hudTimer.textContent = formatTime(timerLeft);
     if (timerLeft <= 5) hudTimer.classList.add('danger');
     if (timerLeft <= 0) {
       clearInterval(timerInterval);

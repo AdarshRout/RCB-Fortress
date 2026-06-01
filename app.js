@@ -1,5 +1,5 @@
 /**
- * app.js — RCB Fortress Breaker
+ * app.js — RCB BLINKBREAKS
  * ─────────────────────────────────────────────────────────────────────
  * Grid : 8 columns × 16 rows = 128 bricks
  * Logic: Double-tap (300 ms) to shatter. 19-second game timer starts
@@ -10,11 +10,11 @@
 'use strict';
 
 /* ═══ CONSTANTS ═══════════════════════════════════════════════════════ */
-const COLS       = 8;
-const ROWS       = 16;
-const TOTAL      = COLS * ROWS;       // 128
-const GAME_TIME  = 19;                // seconds
-const DBL_MS     = 300;               // double-tap window (ms)
+const COLS = 8;
+const ROWS = 16;
+const TOTAL = COLS * ROWS;       // 128
+const GAME_TIME = 19;                // seconds
+const DBL_MS = 300;               // double-tap window (ms)
 
 /* ═══ HELPERS ═════════════════════════════════════════════════════════ */
 function formatTime(seconds) {
@@ -24,30 +24,30 @@ function formatTime(seconds) {
 }
 
 /* ═══ ELEMENT REFS ════════════════════════════════════════════════════ */
-const gridWall     = document.getElementById('grid-wall');
-const logoOverlay  = document.getElementById('logo-overlay');
-const hudBroken    = document.getElementById('hud-broken');
-const hudTimer     = document.getElementById('hud-timer');
-const progressBar  = document.getElementById('progress-bar');
-const hintText     = document.getElementById('hint-text');
+const gridWall = document.getElementById('grid-wall');
+const logoOverlay = document.getElementById('logo-overlay');
+const hudBroken = document.getElementById('hud-broken');
+const hudTimer = document.getElementById('hud-timer');
+const progressBar = document.getElementById('progress-bar');
+const hintText = document.getElementById('hint-text');
 const modalOverlay = document.getElementById('modal-overlay');
-const modalHeadline    = document.getElementById('modal-headline');
-const modalTagline     = document.getElementById('modal-tagline');
-const modalCouponCode  = document.getElementById('modal-coupon-code');
+const modalHeadline = document.getElementById('modal-headline');
+const modalTagline = document.getElementById('modal-tagline');
+const modalCouponCode = document.getElementById('modal-coupon-code');
 const modalDiscountNum = document.getElementById('modal-discount-num');
-const modalStatsText   = document.getElementById('modal-stats-text');
-const confettiCanvas   = document.getElementById('confetti-canvas');
-const confettiCtx      = confettiCanvas.getContext('2d');
-const introScreen      = document.getElementById('intro-screen');
-const introBtn         = document.getElementById('intro-btn');
+const modalStatsText = document.getElementById('modal-stats-text');
+const confettiCanvas = document.getElementById('confetti-canvas');
+const confettiCtx = confettiCanvas.getContext('2d');
+const introScreen = document.getElementById('intro-screen');
+const introBtn = document.getElementById('intro-btn');
 
 /* ═══ GAME STATE ══════════════════════════════════════════════════════ */
-let brokenCount   = 0;
-let timerLeft     = GAME_TIME;
+let brokenCount = 0;
+let timerLeft = GAME_TIME;
 let timerInterval = null;
-let gameStarted   = false;
-let gameOver      = false;
-let discount      = 0;
+let gameStarted = false;
+let gameOver = false;
+let discount = 0;
 
 /** Map<brickElement, { firstTapTime, resetTimeout }> */
 const tapRegistry = new Map();
@@ -60,18 +60,18 @@ const PARTICLE_COLORS = ['#CC0000', '#F5C518', '#ff6b35', '#ffffff', '#ff4081', 
    ════════════════════════════════════════════════════════════════════ */
 function initGame() {
   /* ── Reset state ── */
-  brokenCount   = 0;
-  timerLeft     = GAME_TIME;
-  gameStarted   = false;
-  gameOver      = false;
-  discount      = 0;
+  brokenCount = 0;
+  timerLeft = GAME_TIME;
+  gameStarted = false;
+  gameOver = false;
+  discount = 0;
   tapRegistry.clear();
 
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
   /* ── Reset HUD ── */
   hudBroken.textContent = '0';
-  hudTimer.textContent  = formatTime(GAME_TIME);
+  hudTimer.textContent = formatTime(GAME_TIME);
   hudTimer.classList.remove('danger');
   progressBar.style.width = '0%';
   hintText.classList.remove('hide');
@@ -128,7 +128,7 @@ function handleTouchStart(e) {
   const brick = e.currentTarget;
   if (brick.classList.contains('shatter')) return;
 
-  const now   = Date.now();
+  const now = Date.now();
   const state = tapRegistry.get(brick);
 
   if (state && (now - state.firstTapTime) <= DBL_MS) {
@@ -213,15 +213,15 @@ function spawnTrophy(brick) {
    ════════════════════════════════════════════════════════════════════ */
 function spawnParticles(brick) {
   const rect = brick.getBoundingClientRect();
-  const cx = rect.left + rect.width  / 2;
-  const cy = rect.top  + rect.height / 2;
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
   const COUNT = 9;
 
   for (let i = 0; i < COUNT; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     const angle = (Math.PI * 2 / COUNT) * i;
-    const dist  = 28 + Math.random() * 28;
+    const dist = 28 + Math.random() * 28;
     p.style.cssText = `
       left: ${cx}px;
       top:  ${cy}px;
@@ -283,28 +283,28 @@ function endGame() {
    RESULT MODAL
    ════════════════════════════════════════════════════════════════════ */
 function showResultModal() {
-  const pct     = Math.round((brokenCount / TOTAL) * 100);
+  const pct = Math.round((brokenCount / TOTAL) * 100);
   const elapsed = GAME_TIME - timerLeft;
-  const coupon  = `RCB-CUP-${discount}`;
+  const coupon = `RCB-CUP-${discount}`;
 
   /* Dynamic headline & tagline */
   let headline, tagline;
-  if      (discount === 0)  { headline = 'KEEP TRYING!';  tagline = "RCB holds the record for the highest team total in IPL history, smashing a legendary 263/5 against Pune Warriors India back in 2013."; }
-  else if (discount <  10)  { headline = 'NICE START!';   tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
-  else if (discount <  25)  { headline = 'WELL PLAYED!';  tagline = 'RCB is the only team to retain a player throughout the IPL history.'; }
-  else if (discount <  40)  { headline = 'PLAY BOLD!';    tagline = 'RCB holds the highest individual score in T20 cricket history (175*) and the highest partnership by runs (229) in the IPL.'; }
-  else                      { headline = 'EE SALA! 🏆';  tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; }
+  if (discount === 0) { headline = 'KEEP TRYING!'; tagline = "RCB holds the record for the highest team total in IPL history, smashing a legendary 263/5 against Pune Warriors India back in 2013."; }
+  else if (discount < 10) { headline = 'NICE START!'; tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
+  else if (discount < 25) { headline = 'WELL PLAYED!'; tagline = 'RCB is the only team to retain a player throughout the IPL history.'; }
+  else if (discount < 40) { headline = 'PLAY BOLD!'; tagline = 'RCB holds the highest individual score in T20 cricket history (175*) and the highest partnership by runs (229) in the IPL.'; }
+  else { headline = 'EE SALA! 🏆'; tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; }
 
-  modalHeadline.textContent    = headline;
-  modalTagline.textContent     = tagline;
-  modalCouponCode.textContent  = coupon;
+  modalHeadline.textContent = headline;
+  modalTagline.textContent = tagline;
+  modalCouponCode.textContent = coupon;
   modalDiscountNum.textContent = discount;
-  modalStatsText.innerHTML     =
+  modalStatsText.innerHTML =
     `BLINKBROKE <strong>${brokenCount}</strong> bricks in <strong>${elapsed}s</strong>`;
 
   /* Store coupon for copy button */
   document.getElementById('modal-copy-btn').dataset.coupon = coupon;
-  document.getElementById('modal-copy-btn').textContent    = `🎉 Copy Code: ${coupon}`;
+  document.getElementById('modal-copy-btn').textContent = `🎉 Copy Code: ${coupon}`;
 
   /* Show modal */
   modalOverlay.classList.add('visible');
@@ -318,7 +318,7 @@ function showResultModal() {
    COPY COUPON CODE
    ════════════════════════════════════════════════════════════════════ */
 function copyCode() {
-  const btn    = document.getElementById('modal-copy-btn');
+  const btn = document.getElementById('modal-copy-btn');
   const coupon = btn.dataset.coupon;
   if (!coupon) return;
 

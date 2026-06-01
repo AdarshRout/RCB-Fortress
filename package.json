@@ -1,7 +1,7 @@
 {
   "name": "rcb-fortress",
   "version": "1.0.0",
-  "description": "RCB Fortress Breaker - Double-tap game with Blinkit rewards",
+  "description": "RCB BLINKBREAKS - Double-tap game with Blinkit rewards",
   "type": "module",
   "scripts": {
     "dev": "python -m http.server 8000",

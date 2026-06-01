@@ -1,4 +1,4 @@
-# 🏆 RCB Fortress Breaker
+# 🏆 RCB BLINKBREAKS
 
 A fast-paced, high-performance, and visually spectacular tap-to-shatter web mini-game built to reward Royal Challengers Bangalore (RCB) fans with exclusive **Blinkit** coupon codes! 
 

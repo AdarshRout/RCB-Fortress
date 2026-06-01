@@ -289,11 +289,11 @@ function showResultModal() {
 
   /* Dynamic headline & tagline */
   let headline, tagline;
-  if      (discount === 0)  { headline = 'KEEP TRYING!';  tagline = "You'll smash it next time, Paltan!"; }
+  if      (discount === 0)  { headline = 'KEEP TRYING!';  tagline = "RCB holds the record for the highest team total in IPL history, smashing a legendary 263/5 against Pune Warriors India back in 2013."; }
   else if (discount <  10)  { headline = 'NICE START!';   tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
-  else if (discount <  25)  { headline = 'WELL PLAYED!';  tagline = 'You dented the fortress!'; }
-  else if (discount <  40)  { headline = 'PLAY BOLD!';    tagline = 'Ee Sala Cup Namde style!'; }
-  else                      { headline = 'EE SALA! 🏆';  tagline = 'You destroyed the fortress!'; }
+  else if (discount <  25)  { headline = 'WELL PLAYED!';  tagline = 'RCB is the only team to retain a player throughout the IPL history.'; }
+  else if (discount <  40)  { headline = 'PLAY BOLD!';    tagline = 'RCB holds the highest individual score in T20 cricket history (175*) and the highest partnership by runs (229) in the IPL.'; }
+  else                      { headline = 'EE SALA! 🏆';  tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; }
 
   modalHeadline.textContent    = headline;
   modalTagline.textContent     = tagline;

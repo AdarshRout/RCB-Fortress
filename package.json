@@ -1,0 +1,16 @@
+{
+  "name": "rcb-fortress",
+  "version": "1.0.0",
+  "description": "RCB Fortress Breaker - Double-tap game with Blinkit rewards",
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "lint": "echo 'No linter configured'"
+  },
+  "keywords": ["rcb", "game", "blinkit"],
+  "author": "AdarshRout",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/speed-insights": "^1.1.0"
+  }
+}

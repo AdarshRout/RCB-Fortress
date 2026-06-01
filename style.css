@@ -62,27 +62,28 @@ html, body {
 
 /* ── BRAND PRESENTATION ────────────────────────────────────────── */
 .brand-presentation {
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  width: 70%;
   gap: 16px;
   margin-bottom: 32px;
 }
 .brand-presentation .brand-blinkit {
-  height: 52px;
+  height: 68px;
   width: auto;
   object-fit: contain;
 }
 .brand-presentation .brand-multiplier {
   color: #FFF;
   font-weight: 800;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   opacity: 0.8;
   margin: 0 4px;
 }
 .brand-presentation .brand-rcb {
-  height: 60px;
+  height: 78px;
   width: auto;
   object-fit: contain;
 }
@@ -96,16 +97,16 @@ html, body {
 }
 
 #intro-trophy {
-  width: 88px;
-  height: 88px;
+  width: 110px;
+  height: 110px;
   background: url('assets/trophy.png') center / contain no-repeat;
   filter: drop-shadow(0 0 18px var(--rcb-gold));
 }
 
 .intro-multiplier {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 88px;
-  line-height: 88px;
+  font-size: 110px;
+  line-height: 110px;
   font-weight: 900;
   color: var(--rcb-gold);
   text-shadow: 0 0 28px rgba(245, 197, 24, 0.65);
@@ -114,20 +115,35 @@ html, body {
 }
 
 #intro-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(44px, 12vw, 68px);
-  letter-spacing: 5px;
-  text-align: center;
-  line-height: 1;
-  background: linear-gradient(to right, #ffce00 45%, #ec1c24 55%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  color: initial;
   filter: drop-shadow(0px 4px 16px rgba(0, 0, 0, 0.6));
-  margin: 0;
   user-select: none;
 }
+
+.sholay-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin: 24px 0;
+  text-transform: uppercase;
+  font-family: 'Arial Black', Impact, system-ui, sans-serif;
+  font-weight: 900;
+}
+.sholay-title span { display: inline-block; line-height: 0.8; }
+.text-yellow { color: #ECFF20; text-shadow: 2px 2px 0px #000; }
+.text-red { color: #FF3333; text-shadow: 2px 2px 0px #000; }
+
+/* Tapered Font Sizing (The Sholay Wave) */
+.l-b, .l-s { font-size: 4.8rem; }
+.l-l, .l-k2 { font-size: 4.0rem; }
+.l-i, .l-a { font-size: 3.3rem; }
+.l-n, .l-e { font-size: 2.7rem; }
+.l-k, .l-b2 { font-size: 2.2rem; }
 
 .intro-hashtag {
   font-family: 'Bebas Neue', sans-serif;
@@ -155,11 +171,11 @@ html, body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(245, 197, 24, 0.18);
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 20px 24px;
   width: min(100%, 360px);
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 12px;
 }
 #intro-rules li {
   font-size: 13px;
@@ -177,7 +193,7 @@ html, body {
   border: none;
   border-radius: 16px;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
+  font-size: 1.4rem;
   letter-spacing: 3px;
   color: #fff;
   cursor: pointer;

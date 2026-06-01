@@ -41,33 +41,22 @@
   <!-- ═══ GAME SHELL ══════════════════════════════════════════════════ -->
   <div id="game-shell" class="game-container">
 
-    <!-- Background poster -->
-    <div id="bg-poster"></div>
+    <!-- Floating HUD: Broken Count (left) -->
+    <div class="hud-pill hud-left" id="hud-left">
+      🟢 <span id="hud-broken">0</span>/128
+    </div>
 
-    <!-- HUD — static header -->
-    <header id="hud" class="hud-bar">
-      <div class="hud-row">
-        <div class="hud-pill" id="hud-left">
-          <span class="hud-label">Broken</span>
-          <span class="hud-val" id="hud-broken">0</span>
-        </div>
+    <!-- Floating HUD: Blinkit Logo (center) -->
+    <div class="hud-pill hud-center" id="hud-center">
+      <img src="assets/blinkit.png" alt="Blinkit" />
+    </div>
 
-        <div id="hud-center">
-          <span id="hud-brand">RCB</span>
-          <span id="hud-brand-sub">FORTRESS BREAKER</span>
-        </div>
+    <!-- Floating HUD: Timer (right) -->
+    <div class="hud-pill hud-right" id="hud-right">
+      ⚡ <span id="hud-timer">00:19</span>
+    </div>
 
-        <div class="hud-pill" id="hud-right">
-          <span class="hud-label">Time</span>
-          <span class="hud-val" id="hud-timer">00:19</span>
-        </div>
-      </div>
-
-      <!-- Instruction Text inside HUD bar -->
-      <div id="hint-text">👆 Double-tap to break the brick!</div>
-    </header>
-
-    <!-- 8×16 Brick grid overlay -->
+    <!-- 8×16 Brick grid -->
     <div id="grid-wall" class="grid-wall"></div>
 
     <!-- RCB Logo Overlay -->
@@ -80,6 +69,9 @@
     <div id="progress-wrap">
       <div id="progress-bar"></div>
     </div>
+
+    <!-- Instructional Banner -->
+    <div class="onboard-banner" id="hint-text">👆 Double-tap a brick to shatter!!</div>
 
   </div><!-- /game-shell -->
 

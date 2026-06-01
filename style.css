@@ -11,16 +11,16 @@
 }
 
 :root {
-  --rcb-red:     #CC0000;
-  --rcb-red-dk:  #8b0000;
-  --rcb-gold:    #F5C518;
-  --rcb-dark:    #0d0303;
-  --cols:        8;
-  --rows:        16;
-  --poster-ratio: 0.75;           /* width / height = 3/4          */
-  --hud-h:       84px;            /* Increased height for vertical HUD + Hint text stack */
-  --bar-h:       5px;
-  --radius-pill: 12px;
+  --rcb-red:        #CC0000;
+  --rcb-red-dk:     #8b0000;
+  --rcb-gold:       #F5C518;
+  --rcb-dark:       #0d0303;
+  --blinkit-yellow: #F6D343;
+  --blinkit-green:  #0C8346;
+  --cols:           8;
+  --rows:           16;
+  --bar-h:          5px;
+  --radius-pill:    12px;
   --transition-shatter: 0.3s cubic-bezier(0.55, 0, 1, 0.45);
 }
 
@@ -135,132 +135,75 @@ html, body {
 }
 #intro-btn:active { transform: scale(0.97); }
 
-/* ── GAME SHELL ──────────────────────────────────────────────────── */
-/*
- * The shell is a centered container locked to the poster's 3:4 aspect ratio.
- * On mobile it fills viewport width (max 600px). Height follows from ratio.
- * Everything inside is stacked with position:absolute so the poster,
- * grid, HUD and progress bar all share the same bounding box.
- */
+/* ── GAME CONTAINER ─────────────────────────────────────────────── */
 #game-shell, .game-container {
   position: relative;
   width: 100vw;
   max-width: 600px;
-  /* height = width × (4/3) since ratio is 3:4 */
+  /* Portrait 3:4 — fills viewport height on mobile */
   height: calc(100vw * (4 / 3));
-  max-height: calc(600px * (4 / 3));       /* = 800px */
+  max-height: calc(600px * (4 / 3));
   margin: 0 auto;
   overflow: hidden;
+  border-radius: 0;
+  /* Poster as direct CSS background, dimmed for readability */
+  background: url('assets/champions_poster.jpg') center / cover no-repeat;
+  font-family: system-ui, -apple-system, sans-serif;
   /* Centre vertically within the dark body */
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
 }
 
-/* ── BACKGROUND POSTER ───────────────────────────────────────────── */
-/*
- * Sits at z-index 1. Covers the shell fully with object-fit: cover semantics
- * using background-size: cover so no poster pixel leaks outside the shell.
- */
-#bg-poster {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: url('assets/champions_poster.jpg') center center / cover no-repeat;
-  /* Dim the poster so the brick grid reads clearly */
-  filter: brightness(0.42) saturate(1.15);
-}
-
-/* ── HUD TOP BAR ─────────────────────────────────────────────────── */
-#hud, .hud-bar {
-  position: relative;
-  z-index: 20;
-  height: var(--hud-h);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 6px 14px;
-  gap: 4px;
-  background: #222;
-  border-bottom: 2px solid rgba(245, 197, 24, 0.4);
-}
-
-.hud-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
+/* ── FLOATING HUD BADGES ─────────────────────────────────────────── */
 .hud-pill {
-  background: rgba(0, 0, 0, 0.58);
-  border: 1.5px solid rgba(245, 197, 24, 0.3);
-  border-radius: var(--radius-pill);
-  padding: 5px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 72px;
-}
-.hud-label {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 1.8px;
+  position: absolute;
+  top: 12px;
+  z-index: 10;
+  background: rgba(18, 18, 18, 0.88);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: 1px solid #333;
   text-transform: uppercase;
-  color: var(--rcb-gold);
-  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
 }
-.hud-val {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 26px;
-  line-height: 1;
-  color: #fff;
-  letter-spacing: 1px;
+.hud-left, #hud-left  { left: 12px;  color: #fff; }
+.hud-right, #hud-right { right: 12px; color: var(--blinkit-yellow); }
+.hud-center, #hud-center {
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  height: 28px;
 }
+.hud-center img, #hud-center img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ── TIMER DANGER STATE ──────────────────────────────────────────── */
 #hud-timer { color: var(--rcb-gold); transition: color 0.3s; }
 #hud-timer.danger {
   color: #ff3d3d;
   animation: pulse-red 0.5s ease-in-out infinite alternate;
 }
 
-#hud-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-#hud-brand {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 4px;
-  color: var(--rcb-gold);
-  line-height: 1;
-  text-shadow: 0 0 12px rgba(245, 197, 24, 0.5);
-}
-#hud-brand-sub {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
+
 
 /* ── 8×16 GRID WALL ─────────────────────────────────────────────── */
-/*
- * Absolute overlay that exactly covers the game shell (same bounding box
- * as the poster). z-index 5 sits above the poster (1) but below HUD (20).
- */
 #grid-wall, .grid-wall {
-  position: relative;
-  width: 100%;
-  flex: 1;
+  position: absolute;
+  inset: 0;
   z-index: 5;
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-template-rows:    repeat(var(--rows), 1fr);
-  /* The grid only occupies the remaining section below HUD and above progress wrap */
 }
 
 /* ── BRICK CELL ──────────────────────────────────────────────────── */
@@ -312,27 +255,38 @@ html, body {
 }
 
 /* ── TROPHY REWARD ───────────────────────────────────────────────── */
-/*
- * Spawned as an absolute child of the shattered brick cell.
- * Animates translateY upward while fading out (reverse trophy animation).
- */
-.trophy-reward {
+/* Drops downward from the brick and fades out */
+.trophy-reward, .trophy-drop {
   position: absolute;
   inset: 0;
   background: url('assets/trophy.png') center / 60% auto no-repeat;
   pointer-events: none;
   z-index: 8;
-  animation: trophy-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: dropDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-/* ── HINT TEXT ───────────────────────────────────────────────────── */
-#hint-text {
-  font-size: 11px;
-  color: var(--rcb-gold);
-  letter-spacing: 0.6px;
-  text-align: center;
+@keyframes dropDown {
+  0%   { transform: translateY(0)    scale(0.7); opacity: 1; }
+  100% { transform: translateY(35px) scale(1);   opacity: 0; }
+}
+
+/* ── ONBOARD BANNER ──────────────────────────────────────────────── */
+.onboard-banner, #hint-text {
+  position: absolute;
+  bottom: calc(var(--bar-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(18, 18, 18, 0.9);
+  padding: 6px 16px;
+  border-radius: 30px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.75rem;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  font-weight: 600;
+  white-space: nowrap;
   animation: blink 2s ease-in-out infinite;
   pointer-events: none;
 }

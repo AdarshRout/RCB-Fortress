@@ -198,14 +198,14 @@ function triggerShatter(brick) {
 
 /* ════════════════════════════════════════════════════════════════════
    TROPHY REWARD
-   Spawned as absolute child of shattered brick; floats upward via CSS.
+   Spawned as absolute child of shattered brick; drops downward via CSS.
    ════════════════════════════════════════════════════════════════════ */
 function spawnTrophy(brick) {
   const trophy = document.createElement('div');
-  trophy.className = 'trophy-reward';
+  trophy.className = 'trophy-drop';
   brick.appendChild(trophy);
-  /* Remove after animation completes (0.65 s) */
-  setTimeout(() => trophy.remove(), 700);
+  /* Remove after animation completes (0.4 s + buffer) */
+  setTimeout(() => trophy.remove(), 500);
 }
 
 /* ════════════════════════════════════════════════════════════════════

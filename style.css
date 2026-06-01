@@ -58,6 +58,29 @@ html, body {
   pointer-events: none;
 }
 
+/* ── BRAND PRESENTATION ────────────────────────────────────────── */
+.brand-presentation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.presenter-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+.presenter-text {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  color: #c0c0c0;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+}
+
 #intro-trophy {
   width: 88px;
   height: 88px;

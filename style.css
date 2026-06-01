@@ -28,6 +28,8 @@
 html, body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   background: var(--rcb-dark);
   font-family: 'Outfit', sans-serif;
   overflow: hidden;
@@ -46,9 +48,9 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 28px 24px;
+  justify-content: space-between;
+  padding: 24px 16px;
+  box-sizing: border-box;
   background: rgba(13, 3, 3, 0.97);
   backdrop-filter: blur(6px);
   transition: opacity 0.45s ease;
@@ -200,14 +202,13 @@ html, body {
   position: relative;
   width: 100vw;
   max-width: 600px;
-  height: calc(100vw * (4 / 3));
-  max-height: calc(600px * (4 / 3));
+  height: 100vh;
+  height: 100dvh;
   margin: 0 auto;
   overflow: hidden;
   background: url('assets/champions_poster.jpg') center / cover no-repeat;
   font-family: system-ui, -apple-system, sans-serif;
-  top: 50%;
-  transform: translateY(-50%);
+  box-sizing: border-box;
   /* Flex column: header on top, grid fills the rest */
   display: flex;
   flex-direction: column;

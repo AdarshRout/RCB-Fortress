@@ -136,22 +136,24 @@ html, body {
   letter-spacing: -2px;
   filter:
     drop-shadow(-1px 1px 0px #000)
-    drop-shadow(-2px 2px 0px #000)
-    drop-shadow(-3px 3px 0px #000)
-    drop-shadow(-4px 4px 0px #000)
-    drop-shadow(-5px 5px 0px #000)
-    drop-shadow(-6px 6px 0px #000)
-    drop-shadow(-7px 7px 5px rgba(0,0,0,0.8));
+    drop-shadow(-1px 1px 0px #000)
+    drop-shadow(-1px 1px 0px #000)
+    drop-shadow(-1px 1px 0px #000)
+    drop-shadow(-1px 1px 0px #000)
+    drop-shadow(-1px 1px 0px #000)
+    drop-shadow(-2px 2px 4px rgba(0, 0, 0, 0.8));
 }
 .sholay-title span {
   display: inline-block;
   line-height: 0.95;
-  background: linear-gradient(to bottom, #FFE600 0%, #FF9900 50%, #E60000 100%);
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><path d="M0,10 L15,25 L10,45 L0,50 M15,25 L35,20 L45,40 L30,55 L10,45 M35,20 L60,10 L60,30 L45,40 M45,40 L60,50 M30,55 L45,60 M10,45 L30,55" fill="none" stroke="%23000000" stroke-width="1.8" opacity="0.85" stroke-linejoin="round"/></svg>') repeat,
+    linear-gradient(to bottom, #FFE600 0%, #FF9900 50%, #E60000 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1.5px #000;
+  -webkit-text-stroke: 1.8px #000;
 }
 
 /* Tapered Font Sizing (The Sholay Wave) */

@@ -113,20 +113,18 @@ html, body {
 
 #intro-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(36px, 10vw, 56px);
-  letter-spacing: 4px;
+  font-size: clamp(44px, 12vw, 68px);
+  letter-spacing: 5px;
   text-align: center;
   line-height: 1;
-  text-shadow: 0 0 28px rgba(0, 0, 0, 0.5);
-}
-.title-blink {
-  color: #fff;
-}
-.title-n {
-  color: var(--rcb-red);
-}
-.title-break {
-  color: var(--rcb-gold);
+  background: linear-gradient(to right, #ffffff 15%, var(--rcb-red) 55%, var(--rcb-gold) 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0px 4px 16px rgba(0, 0, 0, 0.6));
+  margin: 0;
+  user-select: none;
 }
 
 .intro-hashtag {

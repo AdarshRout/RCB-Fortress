@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <!-- ── Grid Wrapper (relative context for all game-area layers) ── -->
+    <!-- ── Grid Wrapper (relative context for game-area layers only) ── -->
     <div class="grid-wrapper">
 
       <!-- 8×16 Brick grid -->
@@ -79,12 +79,15 @@
         <div id="progress-bar"></div>
       </div>
 
-      <!-- Instructional Banner -->
-      <div class="onboard-banner" id="hint-text">👆 Double-tap a brick to shatter!!</div>
-
     </div><!-- /grid-wrapper -->
 
+    <!-- ── Game Footer (banner lives here, completely outside the grid) ── -->
+    <div class="game-footer">
+      <div class="onboard-banner" id="hint-text">👆 Double-tap a brick to shatter!!</div>
+    </div>
+
   </div><!-- /game-shell -->
+
 
 
   <!-- ═══ RESULT MODAL ════════════════════════════════════════════════ -->

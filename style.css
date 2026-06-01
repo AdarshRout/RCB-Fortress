@@ -203,14 +203,24 @@ html, body {
 }
 
 /* ── GRID WRAPPER ─────────────────────────────────────────────── */
-/* Fills all height below .hud-header; padding-bottom reserves space for onboard banner */
+/* Fills all height between .hud-header and .game-footer */
 .grid-wrapper {
   position: relative;
   width: 100%;
   flex: 1;
-  padding-bottom: 60px;
-  box-sizing: border-box;
   overflow: hidden;
+}
+
+/* ── GAME FOOTER ─────────────────────────────────────────────── */
+/* Fixed-height bar below the grid — banner text lives here */
+.game-footer {
+  height: 44px;
+  background: #121212;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-top: 1px solid #222;
 }
 
 /* ── 8×16 GRID WALL ─────────────────────────────────────────────── */
@@ -288,20 +298,16 @@ html, body {
 }
 
 /* ── ONBOARD BANNER ──────────────────────────────────────────────── */
-/* Docked to the bottom of .grid-wrapper, above the padding-bottom clearance zone */
+/* Static in-flow text inside .game-footer — no absolute positioning needed */
 .onboard-banner, #hint-text {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(18, 18, 18, 0.9);
-  padding: 6px 16px;
-  border-radius: 30px;
+  position: static;
+  transform: none;
+  background: none;
+  border: none;
+  padding: 0;
   color: #fff;
   font-weight: 700;
   font-size: 0.75rem;
-  z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   white-space: nowrap;

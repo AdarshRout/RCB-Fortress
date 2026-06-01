@@ -117,7 +117,7 @@ html, body {
   letter-spacing: 5px;
   text-align: center;
   line-height: 1;
-  background: linear-gradient(to right, var(--rcb-red) 10%, var(--rcb-gold) 90%);
+  background: linear-gradient(to right, #ffce00 45%, #ec1c24 55%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

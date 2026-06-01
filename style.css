@@ -186,13 +186,22 @@ html, body {
 .hud-center-logo, #hud-center {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  height: 100%;
 }
 .hud-center-logo img, #hud-center img {
-  height: 24px;
+  height: 28px;
   width: auto;
   object-fit: contain;
   display: block;
+}
+.partner-text {
+  color: #FF3333;
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-shadow: 1px 1px 0px #000;
 }
 
 /* ── TIMER DANGER STATE ─────────────────────────────────────── */

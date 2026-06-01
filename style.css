@@ -140,61 +140,76 @@ html, body {
   position: relative;
   width: 100vw;
   max-width: 600px;
-  /* Portrait 3:4 — fills viewport height on mobile */
   height: calc(100vw * (4 / 3));
   max-height: calc(600px * (4 / 3));
   margin: 0 auto;
   overflow: hidden;
-  border-radius: 0;
-  /* Poster as direct CSS background, dimmed for readability */
   background: url('assets/champions_poster.jpg') center / cover no-repeat;
   font-family: system-ui, -apple-system, sans-serif;
-  /* Centre vertically within the dark body */
   top: 50%;
   transform: translateY(-50%);
+  /* Flex column: header on top, grid fills the rest */
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── FLOATING HUD BADGES ─────────────────────────────────────────── */
+/* ── HUD HEADER BAR ──────────────────────────────────────────── */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background: #121212;
+  height: 50px;
+  flex-shrink: 0;          /* never compress the header */
+  z-index: 20;
+  position: relative;
+}
+
+/* ── HUD PILLS (flow inside flexbox, no absolute positioning) ────── */
 .hud-pill {
-  position: absolute;
-  top: 12px;
-  z-index: 10;
-  background: rgba(18, 18, 18, 0.88);
-  padding: 6px 14px;
+  background: rgba(40, 40, 40, 0.95);
+  padding: 5px 12px;
   border-radius: 20px;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   border: 1px solid #333;
   text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 4px;
-  backdrop-filter: blur(4px);
 }
-.hud-left, #hud-left  { left: 12px;  color: #fff; }
-.hud-right, #hud-right { right: 12px; color: var(--blinkit-yellow); }
-.hud-center, #hud-center {
-  left: 50%;
-  transform: translateX(-50%);
-  background: none;
-  border: none;
-  padding: 0;
-  height: 28px;
+.hud-left, #hud-left   { color: #fff; }
+.hud-right, #hud-right { color: var(--blinkit-yellow); }
+
+/* ── BLINKIT CENTER LOGO ─────────────────────────────────────── */
+.hud-center-logo, #hud-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.hud-center img, #hud-center img {
-  height: 100%;
+.hud-center-logo img, #hud-center img {
+  height: 24px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
-/* ── TIMER DANGER STATE ──────────────────────────────────────────── */
+/* ── TIMER DANGER STATE ─────────────────────────────────────── */
 #hud-timer { color: var(--rcb-gold); transition: color 0.3s; }
 #hud-timer.danger {
   color: #ff3d3d;
   animation: pulse-red 0.5s ease-in-out infinite alternate;
 }
 
-
+/* ── GRID WRAPPER ─────────────────────────────────────────────── */
+/* Fills all height below .hud-header */
+.grid-wrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+}
 
 /* ── 8×16 GRID WALL ─────────────────────────────────────────────── */
 #grid-wall, .grid-wall {

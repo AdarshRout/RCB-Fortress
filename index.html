@@ -40,45 +40,52 @@
 
   <!-- ═══ GAME SHELL ══════════════════════════════════════════════════ -->
   <div id="game-shell" class="game-container">
-  <!-- ═══ PRELOADER ════════════════════════════════════════════════════ -->
+
+    <!-- ── Preloader ────────────────────────────────────────────────── -->
     <div class="preloader" id="preloader">
       <img src="assets/blinkit.png" class="preloader-logo" alt="Blinkit" />
       <div class="preloader-text">Presents <span class="preloader-subtext">RCB's Champion Fortress</span></div>
     </div>
 
-    <!-- Floating HUD: Broken Count (left) -->
-    <div class="hud-pill hud-left" id="hud-left">
-      🟢 <span id="hud-broken">0</span>/128
+    <!-- ── HUD Header (sits above the grid, never overlaps bricks) ─── -->
+    <div class="hud-header">
+      <div class="hud-pill hud-left" id="hud-left">
+        🟢 <span id="hud-broken">0</span>/128
+      </div>
+
+      <div class="hud-center-logo" id="hud-center">
+        <img src="assets/blinkit.png" alt="Blinkit" />
+      </div>
+
+      <div class="hud-pill hud-right" id="hud-right">
+        ⚡ <span id="hud-timer">00:19</span>
+      </div>
     </div>
 
-    <!-- Floating HUD: Blinkit Logo (center) -->
-    <div class="hud-pill hud-center" id="hud-center">
-      <img src="assets/blinkit.png" alt="Blinkit" />
-    </div>
+    <!-- ── Grid Wrapper (relative context for all game-area layers) ── -->
+    <div class="grid-wrapper">
 
-    <!-- Floating HUD: Timer (right) -->
-    <div class="hud-pill hud-right" id="hud-right">
-      ⚡ <span id="hud-timer">00:19</span>
-    </div>
+      <!-- 8×16 Brick grid -->
+      <div id="grid-wall" class="grid-wall"></div>
 
-    <!-- 8×16 Brick grid -->
-    <div id="grid-wall" class="grid-wall"></div>
+      <!-- RCB Logo Overlay (end-game transition) -->
+      <div id="logo-overlay" class="logo-container">
+        <div class="light-rays"></div>
+        <img class="rcb-logo" src="assets/Logo.svg.png" alt="RCB Logo" />
+      </div>
 
-    <!-- RCB Logo Overlay -->
-    <div id="logo-overlay" class="logo-container">
-      <div class="light-rays"></div>
-      <img class="rcb-logo" src="assets/Logo.svg.png" alt="RCB Logo" />
-    </div>
+      <!-- Bottom progress strip -->
+      <div id="progress-wrap">
+        <div id="progress-bar"></div>
+      </div>
 
-    <!-- Bottom progress strip -->
-    <div id="progress-wrap">
-      <div id="progress-bar"></div>
-    </div>
+      <!-- Instructional Banner -->
+      <div class="onboard-banner" id="hint-text">👆 Double-tap a brick to shatter!!</div>
 
-    <!-- Instructional Banner -->
-    <div class="onboard-banner" id="hint-text">👆 Double-tap a brick to shatter!!</div>
+    </div><!-- /grid-wrapper -->
 
   </div><!-- /game-shell -->
+
 
   <!-- ═══ RESULT MODAL ════════════════════════════════════════════════ -->
   <div id="modal-overlay" aria-hidden="true">

@@ -83,8 +83,8 @@ function initGame() {
   /* ── Reset logo overlay ── */
   logoOverlay.classList.remove('active');
 
-  /* ── Stop fireworks ── */
-  stopFireworks();
+  /* ── Stop custom fireworks ── */
+  stopCustomFireworks();
 
   /* ── Build the 128 bricks ── */
   buildGrid();
@@ -311,7 +311,7 @@ function showResultModal() {
   modalOverlay.setAttribute('aria-hidden', 'false');
 
   /* Continuous gorgeous fireworks throughout the screen */
-  launchFireworks();
+  startCustomFireworks();
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -373,103 +373,161 @@ window.addEventListener('load', () => {
 /* ════════════════════════════════════════════════════════════════════
    FIREWORKS ENGINE (Canvas-based, no deps, continuous beautiful bursts)
    ════════════════════════════════════════════════════════════════════ */
-let fireworksRunning = false;
-let rockets = [];
-let sparks = [];
-let fireworksRaf = null;
-
-const FW_COLORS = ['#CC0000', '#F5C518', '#ff6b35', '#ffffff', '#ff4081', '#00e5ff', '#ffcc00'];
-
-function launchFireworks() {
-  confettiCanvas.width  = window.innerWidth;
-  confettiCanvas.height = window.innerHeight;
-  rockets = [];
-  sparks = [];
-  fireworksRunning = true;
-  tickFireworks();
-}
-
-function spawnRocket() {
-  if (rockets.length > 5) return;
-  const x = Math.random() * confettiCanvas.width;
-  const y = confettiCanvas.height;
-  const targetY = confettiCanvas.height * 0.12 + Math.random() * (confettiCanvas.height * 0.45);
-  const speed = 7 + Math.random() * 5;
-  const color = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
-  rockets.push({ x, y, targetY, speed, color, radius: 3 });
-}
-
-function spawnExplosion(x, y, color) {
-  const count = 40 + Math.floor(Math.random() * 20);
-  for (let i = 0; i < count; i++) {
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
     const angle = Math.random() * Math.PI * 2;
     const speed = 1.8 + Math.random() * 4.2;
-    sparks.push({
-      x: x,
-      y: y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      color: color,
-      alpha: 1.0,
-      decay: 0.01 + Math.random() * 0.01,
-      gravity: 0.05,
-      size: 1.8 + Math.random() * 2.2
-    });
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.color = color;
+    this.alpha = 1.0;
+    this.decay = 0.012 + Math.random() * 0.012;
+    this.gravity = 0.06;
+    this.size = 2.0 + Math.random() * 2.0;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    this.alpha -= this.decay;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
   }
 }
 
-function tickFireworks() {
-  if (!fireworksRunning) return;
-  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
-  if (Math.random() < 0.04) {
-    spawnRocket();
+class Firework {
+  constructor(width, height) {
+    this.x = Math.random() * width;
+    this.y = height;
+    this.targetY = height * 0.15 + Math.random() * (height * 0.45);
+    this.speed = 6 + Math.random() * 5;
+    const palette = ['#FFD700', '#FF3333', '#ECFF20'];
+    this.color = palette[Math.floor(Math.random() * palette.length)];
+    this.radius = 3;
+    this.exploded = false;
   }
 
-  // Update & Draw Rockets
-  for (let i = rockets.length - 1; i >= 0; i--) {
-    const r = rockets[i];
-    r.y -= r.speed;
-
-    confettiCtx.beginPath();
-    confettiCtx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-    confettiCtx.fillStyle = r.color;
-    confettiCtx.fill();
-
-    if (r.y <= r.targetY) {
-      spawnExplosion(r.x, r.y, r.color);
-      rockets.splice(i, 1);
+  update() {
+    this.y -= this.speed;
+    if (this.y <= this.targetY) {
+      this.exploded = true;
     }
   }
 
-  // Update & Draw Sparks
-  for (let i = sparks.length - 1; i >= 0; i--) {
-    const s = sparks[i];
-    s.x += s.vx;
-    s.y += s.vy;
-    s.vy += s.gravity;
-    s.alpha -= s.decay;
-
-    if (s.alpha <= 0) {
-      sparks.splice(i, 1);
-    } else {
-      confettiCtx.save();
-      confettiCtx.globalAlpha = s.alpha;
-      confettiCtx.beginPath();
-      confettiCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-      confettiCtx.fillStyle = s.color;
-      confettiCtx.fill();
-      confettiCtx.restore();
-    }
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
   }
-
-  fireworksRaf = requestAnimationFrame(tickFireworks);
 }
 
-function stopFireworks() {
-  fireworksRunning = false;
-  if (fireworksRaf) { cancelAnimationFrame(fireworksRaf); fireworksRaf = null; }
-  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+let customFireworksActive = false;
+let customRockets = [];
+let customParticles = [];
+let customFireworksRaf = null;
+let customFireworksInterval = null;
+
+function startCustomFireworks() {
+  const modalOverlay = document.getElementById('modal-overlay');
+  if (!modalOverlay) return;
+
+  let canvas = document.getElementById('fireworks-canvas');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'fireworks-canvas';
+    modalOverlay.insertBefore(canvas, modalOverlay.firstChild);
+  }
+
+  const container = document.getElementById('game-shell') || document.querySelector('.game-container');
+  if (container) {
+    const rect = container.getBoundingClientRect();
+    canvas.style.position = 'absolute';
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+    canvas.style.left = `${rect.left}px`;
+    canvas.style.top = `${rect.top}px`;
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+
+  const ctx = canvas.getContext('2d');
+  customRockets = [];
+  customParticles = [];
+  customFireworksActive = true;
+
+  function tick() {
+    if (!customFireworksActive) return;
+
+    // smooth cinematic trail
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Update & Draw Rockets
+    for (let i = customRockets.length - 1; i >= 0; i--) {
+      const r = customRockets[i];
+      r.update();
+      r.draw(ctx);
+      if (r.exploded) {
+        const count = 40 + Math.floor(Math.random() * 21); // 40-60 particles
+        for (let j = 0; j < count; j++) {
+          customParticles.push(new Particle(r.x, r.y, r.color));
+        }
+        customRockets.splice(i, 1);
+      }
+    }
+
+    // Update & Draw Particles
+    for (let i = customParticles.length - 1; i >= 0; i--) {
+      const p = customParticles[i];
+      p.update();
+      if (p.alpha <= 0) {
+        customParticles.splice(i, 1);
+      } else {
+        p.draw(ctx);
+      }
+    }
+
+    customFireworksRaf = requestAnimationFrame(tick);
+  }
+
+  tick();
+
+  // Auto-spawn rockets every 400ms
+  if (customFireworksInterval) clearInterval(customFireworksInterval);
+  customFireworksInterval = setInterval(() => {
+    if (customFireworksActive) {
+      customRockets.push(new Firework(canvas.width, canvas.height));
+    }
+  }, 400);
+}
+
+function stopCustomFireworks() {
+  customFireworksActive = false;
+  if (customFireworksRaf) {
+    cancelAnimationFrame(customFireworksRaf);
+    customFireworksRaf = null;
+  }
+  if (customFireworksInterval) {
+    clearInterval(customFireworksInterval);
+    customFireworksInterval = null;
+  }
+  const canvas = document.getElementById('fireworks-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -483,10 +541,17 @@ document.addEventListener('touchmove', e => {
 
 document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
 
-/* Resize — keep fireworks canvas in sync */
+/* Resize — keep custom fireworks canvas in sync */
 window.addEventListener('resize', () => {
-  if (fireworksRunning) {
-    confettiCanvas.width  = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
+  const canvas = document.getElementById('fireworks-canvas');
+  const container = document.getElementById('game-shell') || document.querySelector('.game-container');
+  if (canvas && container) {
+    const rect = container.getBoundingClientRect();
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+    canvas.style.left = `${rect.left}px`;
+    canvas.style.top = `${rect.top}px`;
+    canvas.width = rect.width;
+    canvas.height = rect.height;
   }
 });

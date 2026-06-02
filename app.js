@@ -9,6 +9,172 @@
 
 'use strict';
 
+/* ═══ AUDIO SYSTEM ════════════════════════════════════════════════════ */
+let isMuted = false;
+
+// Preload URLs for maximum stability and fallback capability
+const AUDIO_URLS = {
+  shatter: 'https://assets.mixkit.co/active_storage/sfx/1657/1657-84.wav', // Sharp wood/glass break
+  combo: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav',   // High-pitched success ding
+  warning: 'https://assets.mixkit.co/active_storage/sfx/2290/2290-84.wav', // Clock tick / alert beep
+  win: 'https://assets.mixkit.co/active_storage/sfx/2021/2021-84.wav',     // Stadium cheering
+  click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'     // Clean UI click
+};
+
+// Initialize audio objects
+const audioInstances = {};
+
+// Audio pooling for shattering to allow super rapid successive playback
+const SHATTER_POOL_SIZE = 4;
+const shatterPool = [];
+let shatterPoolIndex = 0;
+
+// Initialize instances right away
+try {
+  for (const [key, url] of Object.entries(AUDIO_URLS)) {
+    if (key !== 'shatter') {
+      const audio = new Audio(url);
+      audio.preload = 'auto';
+      audioInstances[key] = audio;
+    }
+  }
+
+  for (let i = 0; i < SHATTER_POOL_SIZE; i++) {
+    const audio = new Audio(AUDIO_URLS.shatter);
+    audio.preload = 'auto';
+    shatterPool.push(audio);
+  }
+} catch (e) {
+  console.warn("HTML5 Audio preload failed:", e);
+}
+
+// Incredibly advanced Web Audio synthesis engine for offline/fallback stability!
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSynthFallback(key) {
+  if (isMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    
+    if (key === 'shatter') {
+      // Synthesize a sharp willow wood crack sound (high bandpass / oscillator decay)
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+      
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
+    } else if (key === 'combo') {
+      // Synthesize high-pitched arcade double ding
+      const osc1 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc1.frequency.setValueAtTime(523.25, now); // C5
+      osc1.frequency.setValueAtTime(659.25, now + 0.08); // E5
+      
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      
+      osc1.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.3);
+    } else if (key === 'warning') {
+      // Ticking alert sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.setValueAtTime(1000, now);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    } else if (key === 'win') {
+      // Celebratory major chord arpeggio/fanfare!
+      const notes = [261.63, 329.63, 392.00, 523.25]; // C major
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+        gain.gain.setValueAtTime(0.15, now + idx * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.1);
+        osc.stop(now + idx * 0.1 + 0.45);
+      });
+    } else if (key === 'click') {
+      // Standard snap UI click
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    }
+  } catch (e) {
+    console.warn("Web Audio synthesis failed/blocked:", e);
+  }
+}
+
+// Master play function with robust volume controls and error guards
+function playSound(key) {
+  if (isMuted) return;
+
+  try {
+    if (key === 'shatter') {
+      // Rotate through pooled instances for zero-delay overlapping
+      const audio = shatterPool[shatterPoolIndex];
+      if (audio) {
+        audio.currentTime = 0;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => playSynthFallback(key));
+        }
+      } else {
+        playSynthFallback(key);
+      }
+      shatterPoolIndex = (shatterPoolIndex + 1) % SHATTER_POOL_SIZE;
+    } else {
+      const audio = audioInstances[key];
+      if (audio) {
+        audio.currentTime = 0;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => playSynthFallback(key));
+        }
+      } else {
+        playSynthFallback(key);
+      }
+    }
+  } catch (err) {
+    playSynthFallback(key);
+  }
+}
+
 /* ═══ CONSTANTS ═══════════════════════════════════════════════════════ */
 const COLS = 8;
 const ROWS = 16;
@@ -125,6 +291,9 @@ function buildGrid() {
  */
 function handleTouchStart(e) {
   if (gameOver) return;
+  try {
+    getAudioContext().resume();
+  } catch (err) {}
   const brick = e.currentTarget;
   if (brick.classList.contains('shatter')) return;
 
@@ -156,6 +325,9 @@ function handleTouchStart(e) {
  */
 function handleDblClick(e) {
   if (gameOver) return;
+  try {
+    getAudioContext().resume();
+  } catch (err) {}
   const brick = e.currentTarget;
   if (brick.classList.contains('shatter')) return;
 
@@ -180,11 +352,19 @@ function triggerShatter(brick) {
 
   /* Apply shatter CSS (scale:0, opacity:0, 0.3 s transition) */
   brick.classList.add('shatter');
+  
+  /* Play sharp shatter sound effect */
+  playSound('shatter');
 
   /* Count & update HUD */
   brokenCount++;
   hudBroken.textContent = brokenCount;
   progressBar.style.width = `${(brokenCount / TOTAL) * 100}%`;
+
+  /* Play combo sound every 5 bricks broke */
+  if (brokenCount % 5 === 0) {
+    playSound('combo');
+  }
 
   /* Spawn trophy — animates translateY upward then fades out */
   spawnTrophy(brick);
@@ -241,7 +421,12 @@ function startCountdown() {
   timerInterval = setInterval(() => {
     timerLeft--;
     hudTimer.textContent = formatTime(timerLeft);
-    if (timerLeft <= 5) hudTimer.classList.add('danger');
+    if (timerLeft <= 5) {
+      hudTimer.classList.add('danger');
+      if (timerLeft > 0) {
+        playSound('warning');
+      }
+    }
     if (timerLeft <= 0) {
       clearInterval(timerInterval);
       timerInterval = null;
@@ -293,7 +478,11 @@ function showResultModal() {
   else if (discount < 10) { headline = 'NICE START!'; tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
   else if (discount < 25) { headline = 'WELL PLAYED!'; tagline = 'RCB is the only team to retain a player throughout the IPL history.'; }
   else if (discount < 40) { headline = 'PLAY BOLD!'; tagline = 'RCB holds the highest individual score in T20 cricket history (175*) and the highest partnership by runs (229) in the IPL.'; }
-  else { headline = 'EE SALA! 🏆'; tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; }
+  else { 
+    headline = 'EE SALA! 🏆'; 
+    tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; 
+    playSound('win');
+  }
 
   modalHeadline.textContent = headline;
   modalTagline.textContent = tagline;
@@ -318,6 +507,7 @@ function showResultModal() {
    COPY COUPON CODE
    ════════════════════════════════════════════════════════════════════ */
 function copyCode() {
+  playSound('click');
   const btn = document.getElementById('modal-copy-btn');
   const coupon = btn.dataset.coupon;
   if (!coupon) return;
@@ -350,7 +540,30 @@ function startGame() {
   initGame();
 }
 
-introBtn.addEventListener('click', startGame);
+introBtn.addEventListener('click', () => {
+  playSound('click');
+  try {
+    getAudioContext().resume();
+  } catch (e) {}
+  startGame();
+});
+
+// Setup Global Mute Toggle Button
+const muteBtn = document.getElementById('mute-toggle');
+if (muteBtn) {
+  muteBtn.addEventListener('click', () => {
+    isMuted = !isMuted;
+    muteBtn.textContent = isMuted ? '🔇' : '🔊';
+    muteBtn.classList.toggle('muted', isMuted);
+    
+    // Resume context on toggle interaction just in case
+    try {
+      getAudioContext().resume();
+    } catch (e) {}
+    
+    playSound('click');
+  });
+}
 
 /* ════════════════════════════════════════════════════════════════════
    PRELOADER LIFECYCLE

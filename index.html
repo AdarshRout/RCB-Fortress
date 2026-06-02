@@ -78,7 +78,7 @@
     <!-- ── HUD Header (sits above the grid, never overlaps bricks) ─── -->
     <div class="hud-header">
       <div class="hud-pill hud-left" id="hud-left">
-        🟢 <span id="hud-broken">0</span>/128
+        🟢 <span id="hud-broken">0</span>
       </div>
 
       <div class="hud-center-logo" id="hud-center">
@@ -126,6 +126,8 @@
 
   <!-- ═══ RESULT MODAL ════════════════════════════════════════════════ -->
   <div id="modal-overlay" aria-hidden="true">
+    <!-- Mute button specifically for the results page -->
+    <button class="mute-toggle" aria-label="Mute sound" title="Mute/Unmute sound">🔊</button>
     <div id="modal" role="dialog" aria-labelledby="modal-headline">
       <div id="modal-trophy-icon"></div>
       <h2 id="modal-headline">PLAY BOLD!</h2>

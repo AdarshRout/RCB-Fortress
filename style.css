@@ -19,7 +19,7 @@
   --rcb-dark: #0d0303;
   --blinkit-yellow: #F6D343;
   --blinkit-green: #0C8346;
-  --cols: 8;
+  --cols: 4;
   --rows: 16;
   --bar-h: 5px;
   --radius-pill: 12px;
@@ -83,12 +83,13 @@ body {
   color: #8b0000;
 }
 
-/* Landing Page Specific Positioning */
-#intro-screen .mute-toggle {
+/* Landing Page & Modal Overlay Specific Positioning */
+#intro-screen .mute-toggle,
+#modal-overlay .mute-toggle {
   position: absolute;
   top: 16px;
   right: 16px;
-  z-index: 50;
+  z-index: 250; /* Float over all primary overlays */
 }
 
 /* HUD Right Sub-Flex Wrapper */
@@ -579,15 +580,13 @@ body {
   transition: width 0.3s ease;
 }
 
-/* ── PARTICLE BURST ──────────────────────────────────────────────── */
-.particle {
-  position: fixed;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+/* ── BRICK SHARD FRAGMENTS ───────────────────────────────────────── */
+.brick-shard {
+  position: absolute;
+  border-radius: 2px;
   pointer-events: none;
-  z-index: 30;
-  animation: particle-burst 0.5s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 /* ── RESULT MODAL ────────────────────────────────────────────────── */
@@ -919,17 +918,6 @@ body {
   }
 }
 
-@keyframes particle-burst {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(var(--pdx), var(--pdy)) scale(0);
-    opacity: 0;
-  }
-}
 
 @keyframes modal-pop {
   from {

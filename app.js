@@ -14,10 +14,10 @@ let isMuted = false;
 
 // Preload URLs for maximum stability and fallback capability
 const AUDIO_URLS = {
-  shatter: 'https://assets.mixkit.co/active_storage/sfx/1657/1657-84.wav', // Sharp wood/glass break
+  shatter: 'assets/brick2.mp3', // Local brick2 shatter sound
   combo: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav',   // High-pitched success ding
   warning: 'https://assets.mixkit.co/active_storage/sfx/2290/2290-84.wav', // Clock tick / alert beep
-  win: 'https://assets.mixkit.co/active_storage/sfx/2021/2021-84.wav',     // Stadium cheering
+  win: 'assets/cheer.mp3',     // Local stadium cheer sound
   click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'     // Clean UI click
 };
 
@@ -65,19 +65,19 @@ function playSynthFallback(key) {
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
-    
+
     if (key === 'shatter') {
       // Synthesize a sharp willow wood crack sound (high bandpass / oscillator decay)
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(800, now);
       osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
-      
+
       gain.gain.setValueAtTime(0.3, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-      
+
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(now);
@@ -86,13 +86,13 @@ function playSynthFallback(key) {
       // Synthesize high-pitched arcade double ding
       const osc1 = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       osc1.frequency.setValueAtTime(523.25, now); // C5
       osc1.frequency.setValueAtTime(659.25, now + 0.08); // E5
-      
+
       gain.gain.setValueAtTime(0.2, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-      
+
       osc1.connect(gain);
       gain.connect(ctx.destination);
       osc1.start(now);
@@ -176,9 +176,9 @@ function playSound(key) {
 }
 
 /* ═══ CONSTANTS ═══════════════════════════════════════════════════════ */
-const COLS = 8;
+const COLS = 4;
 const ROWS = 16;
-const TOTAL = COLS * ROWS;       // 128
+const TOTAL = COLS * ROWS;       // 64
 const GAME_TIME = 19;                // seconds
 const DBL_MS = 300;               // double-tap window (ms)
 
@@ -293,7 +293,7 @@ function handleTouchStart(e) {
   if (gameOver) return;
   try {
     getAudioContext().resume();
-  } catch (err) {}
+  } catch (err) { }
   const brick = e.currentTarget;
   if (brick.classList.contains('shatter')) return;
 
@@ -327,7 +327,7 @@ function handleDblClick(e) {
   if (gameOver) return;
   try {
     getAudioContext().resume();
-  } catch (err) {}
+  } catch (err) { }
   const brick = e.currentTarget;
   if (brick.classList.contains('shatter')) return;
 
@@ -352,7 +352,7 @@ function triggerShatter(brick) {
 
   /* Apply shatter CSS (scale:0, opacity:0, 0.3 s transition) */
   brick.classList.add('shatter');
-  
+
   /* Play sharp shatter sound effect */
   playSound('shatter');
 
@@ -369,8 +369,8 @@ function triggerShatter(brick) {
   /* Spawn trophy — animates translateY upward then fades out */
   spawnTrophy(brick);
 
-  /* Particle burst at brick centre */
-  spawnParticles(brick);
+  /* Brick shard explosion + gravity fall */
+  spawnShards(brick);
 
   /* Check win condition */
   if (brokenCount >= TOTAL) endGame();
@@ -389,29 +389,93 @@ function spawnTrophy(brick) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   PARTICLE BURST
+   BRICK SHARD EXPLOSION + GRAVITY FALL
+   When a brick is shattered, 4-6 fragment shards burst outward from
+   the brick's bounding box and then fall off-screen under gravity.
    ════════════════════════════════════════════════════════════════════ */
-function spawnParticles(brick) {
+function spawnShards(brick) {
   const rect = brick.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const COUNT = 9;
+  const COUNT = 4 + Math.floor(Math.random() * 3); // 4–6 shards
+
+  /* Shard colour palette — brick-like reds, yellows, dark tones */
+  const SHARD_COLORS = ['#CC0000', '#aa0000', '#e8a000', '#F5C518', '#8B0000', '#ff4444'];
+
+  /* Create a fixed-position wrapper that sits over the brick */
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = `
+    position: fixed;
+    left: ${rect.left}px;
+    top: ${rect.top}px;
+    width: ${rect.width}px;
+    height: ${rect.height}px;
+    pointer-events: none;
+    z-index: 50;
+    overflow: visible;
+  `;
+  document.body.appendChild(wrapper);
+
+  const shards = [];
 
   for (let i = 0; i < COUNT; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const angle = (Math.PI * 2 / COUNT) * i;
-    const dist = 28 + Math.random() * 28;
-    p.style.cssText = `
-      left: ${cx}px;
-      top:  ${cy}px;
-      background: ${PARTICLE_COLORS[i % PARTICLE_COLORS.length]};
-      --pdx: ${(Math.cos(angle) * dist).toFixed(1)}px;
-      --pdy: ${(Math.sin(angle) * dist).toFixed(1)}px;
+    const shard = document.createElement('div');
+    shard.className = 'brick-shard';
+
+    /* Random shard dimensions — small irregular chunks */
+    const sw = (rect.width * (0.25 + Math.random() * 0.35)) | 0;
+    const sh = (rect.height * (0.3 + Math.random() * 0.4)) | 0;
+
+    /* Random start position inside the brick bounding box */
+    const sx = Math.random() * (rect.width - sw);
+    const sy = Math.random() * (rect.height - sh);
+
+    /* Physics: burst velocity (pixels/frame) */
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 5;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed - (2 + Math.random() * 3); // bias upward on burst
+    const spin = (Math.random() - 0.5) * 18; // degrees/frame rotation
+    const color = SHARD_COLORS[Math.floor(Math.random() * SHARD_COLORS.length)];
+
+    shard.style.cssText = `
+      position: absolute;
+      left: ${sx}px;
+      top: ${sy}px;
+      width: ${sw}px;
+      height: ${sh}px;
+      background: ${color};
+      border-radius: 2px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.25), 0 2px 4px rgba(0,0,0,0.5);
+      transform-origin: center;
     `;
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 550);
+    wrapper.appendChild(shard);
+
+    shards.push({ el: shard, x: sx, y: sy, vx, vy, spin, rot: 0 });
   }
+
+  /* Physics loop — rAF-based gravity simulation */
+  const GRAVITY = 0.55;
+  const START_TIME = performance.now();
+  const DURATION = 800; // ms
+
+  function tick(now) {
+    const elapsed = now - START_TIME;
+    if (elapsed > DURATION) {
+      wrapper.remove();
+      return;
+    }
+
+    const opacity = Math.max(0, 1 - elapsed / DURATION);
+    for (const s of shards) {
+      s.vy += GRAVITY;
+      s.x += s.vx;
+      s.y += s.vy;
+      s.rot += s.spin;
+      s.el.style.transform = `translate(${s.x - parseFloat(s.el.style.left)}px, ${s.y - parseFloat(s.el.style.top)}px) rotate(${s.rot}deg)`;
+      s.el.style.opacity = opacity;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -454,6 +518,9 @@ function endGame() {
   /* ── 3. Show logo overlay (spawns popIn animation + rotating rays) ── */
   logoOverlay.classList.add('active');
 
+  /* Play the local cheer sound when the game ends and RCB logo overlay appears */
+  playSound('win');
+
   /* ── 4. Hold for 2.5 seconds, then transition to results modal ── */
   setTimeout(() => {
     /* Fade out the logo overlay */
@@ -476,12 +543,11 @@ function showResultModal() {
   let headline, tagline;
   if (discount === 0) { headline = 'KEEP TRYING!'; tagline = "RCB holds the record for the highest team total in IPL history, smashing a legendary 263/5 against Pune Warriors India back in 2013."; }
   else if (discount < 10) { headline = 'NICE START!'; tagline = "The highest team score in IPL playoffs history is 254/5, set by Royal Challengers Bengaluru against the Gujarat Titans during the 2026 Qualifier 1."; }
-  else if (discount < 25) { headline = 'WELL PLAYED!'; tagline = 'RCB is the only team to retain a player throughout the IPL history.'; }
+  else if (discount < 25) { headline = 'WELL PLAYED!'; tagline = 'RCB is the only team to retain a player throughout the IPL history without trading or releasing.'; }
   else if (discount < 40) { headline = 'PLAY BOLD!'; tagline = 'RCB holds the highest individual score in T20 cricket history (175*) and the highest partnership by runs (229) in the IPL.'; }
-  else { 
-    headline = 'EE SALA! 🏆'; 
-    tagline = 'EE SALA CUP 🏆 NAMDU x2 !!'; 
-    playSound('win');
+  else {
+    headline = 'IMPACT PLAYER!';
+    tagline = 'Ee Sala Cup 🏆 Namdu x2✨';
   }
 
   modalHeadline.textContent = headline;
@@ -544,27 +610,51 @@ introBtn.addEventListener('click', () => {
   playSound('click');
   try {
     getAudioContext().resume();
-  } catch (e) {}
+  } catch (e) { }
   startGame();
 });
+
+// Immediately stops and resets all currently playing HTML5 Audio elements
+function silenceAllSounds() {
+  try {
+    for (const audio of Object.values(audioInstances)) {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+    for (const audio of shatterPool) {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to stop active audio:", err);
+  }
+}
 
 // Setup Global Mute Toggle Buttons
 const muteBtns = document.querySelectorAll('.mute-toggle');
 muteBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     isMuted = !isMuted;
-    
+
     // Synchronize all speaker icons on click
     muteBtns.forEach(b => {
       b.textContent = isMuted ? '🔇' : '🔊';
       b.classList.toggle('muted', isMuted);
     });
-    
+
+    if (isMuted) {
+      silenceAllSounds();
+    }
+
     // Resume context on toggle interaction just in case
     try {
       getAudioContext().resume();
-    } catch (e) {}
-    
+    } catch (e) { }
+
     playSound('click');
   });
 });
